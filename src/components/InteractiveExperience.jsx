@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { THREADS, THEME, rng } from "../data/tokens";
+import ExportButton from "./ExportButton";
+import { generateInteractiveSnapshotSVG, downloadSVG } from "../utils/exportSVG";
 
 const PHASES = [
   { id: "void", duration: 5000, title: "", sub: "", instruction: "toca para começar" },
@@ -261,7 +263,7 @@ export default function InteractiveExperience({ mode, width = 400, height = 600 
         {/* Phase 7: info */}
         {phase === 7 && (
           <div style={{ textAlign: "center", animation: "fadeIn 1s ease-out" }}>
-            <div style={{ fontSize: width * 0.035, color: t.textMuted, marginBottom: 4, letterSpacing: "0.1em" }}>15 maio 2025 · online · entrada livre</div>
+            <div style={{ fontSize: width * 0.035, color: t.textMuted, marginBottom: 4, letterSpacing: "0.1em" }}>15 maio 2026 · online · entrada livre</div>
             <div style={{ fontSize: width * 0.025, color: t.textDim, letterSpacing: "0.15em", textTransform: "uppercase" }}>iade · jornadas de design</div>
             <div style={{ display: "flex", gap: 4, justifyContent: "center", marginTop: 16 }}>
               {THREADS.map((c, i) => (
@@ -294,6 +296,9 @@ export default function InteractiveExperience({ mode, width = 400, height = 600 
           {phase}/{PHASES.length - 1}
         </div>
       )}
+      <div style={{ position: "absolute", top: 6, left: 8 }}>
+        <ExportButton mode={mode} label="svg" onClick={(e) => { e.stopPropagation(); downloadSVG(generateInteractiveSnapshotSVG({ width: width * 2, height: height * 2, seed: 42, mode, phase: "reveal" }), `trama-interactive-reveal-${mode}.svg`); }} />
+      </div>
     </div>
   );
 }

@@ -10,8 +10,8 @@ export const THEME = {
     surface: "#0c0c10",
     surfaceHover: "#111118",
     text: "#e2ded8",
-    textMuted: "#5a5a5a",
-    textDim: "#2a2a2a",
+    textMuted: "#e2ded8",
+    textDim: "#8a8a8a",
     border: "rgba(255,255,255,0.06)",
     borderHover: "rgba(255,255,255,0.15)",
     wordmark: "#e2ded8",
@@ -53,8 +53,15 @@ export const PROGRAMME = [
   { time: "14:30", title: "Design Inclusivo e Acessibilidade", speaker: "Miguel Santos", type: "palestra", color: THREADS[3] },
   { time: "15:30", title: "Tipografia Portuguesa Contemporânea", speaker: "Sofia Almeida", type: "palestra", color: THREADS[4] },
   { time: "16:30", title: "Quando o Design se Move", speaker: "Diogo Ferreira", type: "workshop", color: THREADS[5] },
-  { time: "17:30", title: "Debate de Encerramento", speaker: "Todos os oradores", type: "debate", color: THREADS[0] },
+  { time: "17:30", title: "Debate de Encerramento", speaker: "Todos os convidados", type: "debate", color: THREADS[0] },
 ];
+
+export const FORMATS = {
+  horizontalHD: { width: 1920, height: 1080 },
+  verticalStories: { width: 1080, height: 1920 },
+  instagramFeed: { width: 1080, height: 1080 },
+  facebookBanner: { width: 820, height: 312 },
+};
 
 export const rng = (s, i) => {
   let x = Math.sin(s * 9301 + i * 4973) * 49297;

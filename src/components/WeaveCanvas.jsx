@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback } from "react";
 import { THREADS, THEME, rng } from "../data/tokens";
 
-export default function WeaveCanvas({ width, height, seed, interactive, mode, style, overlay }) {
+export default function WeaveCanvas({ width, height, seed, interactive, mode, style, overlay, speed = 1, animated = true }) {
   const canvasRef = useRef(null);
   const mouseRef = useRef({ x: width / 2, y: height / 2 });
   const animRef = useRef(null);
@@ -59,7 +59,7 @@ export default function WeaveCanvas({ width, height, seed, interactive, mode, st
     }
 
     const draw = () => {
-      timeRef.current += 0.006;
+      if (animated) timeRef.current += 0.018 * speed;
       const time = timeRef.current;
       const m = mouseRef.current;
 
@@ -103,8 +103,8 @@ export default function WeaveCanvas({ width, height, seed, interactive, mode, st
         vThreads.forEach((v) => {
           const d = interactive ? Math.sqrt((v.baseX - m.x) ** 2 + (h.baseY - m.y) ** 2) : 999;
           const mi = interactive ? Math.max(0, 1 - d / 180) : 0;
-          if (mi > 0.1 || (!interactive && Math.random() < 0.012)) {
-            const g = interactive ? mi : 0.08 + Math.sin(time * 2 + v.baseX * 0.01 + h.baseY * 0.01) * 0.06;
+          if (mi > 0.1 || (!interactive && rng(Math.floor(v.baseX) * 100 + Math.floor(h.baseY), seed) < 0.012)) {
+            const g = interactive ? mi : 0.08 + rng(v.baseX + h.baseY, seed + 1) * 0.1;
             const r2 = 2 + g * 5;
             const grad = ctx.createRadialGradient(v.baseX, h.baseY, 0, v.baseX, h.baseY, r2);
             grad.addColorStop(0, `rgba(${t.glow},${g * 0.6})`);
@@ -129,7 +129,7 @@ export default function WeaveCanvas({ width, height, seed, interactive, mode, st
         canvas.removeEventListener("touchmove", onTouch);
       }
     };
-  }, [width, height, seed, interactive, mode]);
+  }, [width, height, seed, interactive, mode, speed, animated]);
 
   return (
     <div style={{ position: "relative", width, height, ...style }}>

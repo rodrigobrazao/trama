@@ -1,5 +1,8 @@
 import { useRef, useEffect } from "react";
 import { THREADS, THEME, rng } from "../data/tokens";
+import ExportButton from "./ExportButton";
+import { generateSpeakerSVG, downloadSVG } from "../utils/exportSVG";
+import { generateSpeakerCardHTML, downloadHTML } from "../utils/exportHTML";
 
 function MiniWeave({ size, seed, color, mode }) {
   const canvasRef = useRef(null);
@@ -17,7 +20,7 @@ function MiniWeave({ size, seed, color, mode }) {
     const t = THEME[mode];
 
     const draw = () => {
-      timeRef.current += 0.01;
+      timeRef.current += 0.025;
       const time = timeRef.current;
       ctx.fillStyle = t.bg;
       ctx.fillRect(0, 0, size, size);
@@ -60,40 +63,40 @@ function MiniWeave({ size, seed, color, mode }) {
 
 export default function SpeakerCard({ speaker, mode, index }) {
   const t = THEME[mode];
+  const W = 1080, H = 608;
   return (
-    <div style={{
-      background: t.surface,
-      border: `1px solid ${t.border}`,
-      padding: 20,
-      transition: "all 0.4s cubic-bezier(0.16,1,0.3,1)",
-      cursor: "default",
-      position: "relative",
-      overflow: "hidden",
-    }}
-    onMouseEnter={e => {
-      e.currentTarget.style.borderColor = speaker.color;
-      e.currentTarget.style.transform = "translateY(-3px)";
-    }}
-    onMouseLeave={e => {
-      e.currentTarget.style.borderColor = t.border;
-      e.currentTarget.style.transform = "translateY(0)";
-    }}
-    >
-      <div style={{ display: "flex", gap: 14, alignItems: "center", marginBottom: 14 }}>
-        <MiniWeave size={48} seed={index * 100 + 42} color={speaker.color} mode={mode} />
-        <div>
-          <div style={{ fontSize: 12, fontWeight: 600 }}>{speaker.name}</div>
-          <div style={{ fontSize: 9, color: t.textMuted }}>{speaker.role} · {speaker.org}</div>
+    <div>
+      {/* Card visual — same as original design */}
+      <div style={{
+        border: `1px solid ${t.border}`, padding: 14, display: "flex",
+        flexDirection: "column", gap: 10, transition: "border-color 0.3s",
+      }}>
+        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+          <div style={{ border: `1px solid ${t.border}`, borderRadius: "50%", overflow: "hidden" }}>
+            <MiniWeave size={36} seed={index * 100 + 42} color={speaker.color} mode={mode} />
+          </div>
+          <div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: t.text }}>{speaker.name}</div>
+            <div style={{ fontSize: 8, color: t.textDim, letterSpacing: "0.08em" }}>{speaker.role} · {speaker.org}</div>
+          </div>
+        </div>
+        <div style={{ fontFamily: "'Instrument Serif', serif", fontStyle: "italic", fontSize: 13, color: speaker.color, lineHeight: 1.4 }}>
+          {speaker.topic}
+        </div>
+        <div style={{ display: "flex", gap: 3 }}>
+          {THREADS.map((c, i) => (
+            <div key={i} style={{ width: 16, height: 2, background: c, opacity: c === speaker.color ? 0.7 : 0.15, borderRadius: 1 }} />
+          ))}
         </div>
       </div>
-      <div style={{ fontSize: 10, color: t.textMuted, lineHeight: 1.7, marginBottom: 10 }}>
-        {speaker.topic}
-      </div>
-      <div style={{
-        position: "absolute", top: 12, right: 14,
-        fontSize: 18, color: speaker.color, opacity: 0.25,
-      }}>
-        {speaker.icon}
+
+      {/* Full-size SVG preview — click to expand */}
+        <div style={{ fontSize: 8, color: t.textDim, letterSpacing: "0.08em", fontFamily: "'Roboto Mono', monospace", marginTop: 6 }}>
+          ▸ ver a 100% · {W}×{H}
+        </div>
+      <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
+        <ExportButton mode={mode} label="svg" onClick={() => downloadSVG(generateSpeakerSVG({ speaker, width: W, height: H, seed: index * 100 + 42, mode }), `trama-speaker-card-${speaker.name.replace(/\s+/g, "-").toLowerCase()}.svg`)} />
+        <ExportButton mode={mode} label="html" onClick={() => downloadHTML(generateSpeakerCardHTML({ speaker, seed: index * 100 + 42, mode }), `trama-speaker-card-${speaker.name.replace(/\s+/g, "-").toLowerCase()}.html`)} />
       </div>
     </div>
   );
